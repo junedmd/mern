@@ -1,15 +1,16 @@
 
 import './App.css';
 import axios from 'axios'
-
+import { MdDelete } from "react-icons/md";
+import { MdEditSquare } from "react-icons/md";
 import { useState, useEffect } from "react";
 function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState("");
-  const [birthday, setBirthday] = useState("")
+  const [birthday, setBirthday] = useState([])
 
-  const [data, setData]= useState(" ")
+  const [data, setData]= useState([])
 
     const loaddata = async () => {
       try{
@@ -26,7 +27,7 @@ function App() {
       loaddata();
     }, [])
 
-  const User = async () => {
+  const User = async (id) => {
 
     
       const inputFields = [name, email, mobile, birthday];
@@ -64,6 +65,22 @@ function App() {
   }
 
 
+  // delete function
+  
+  const deleteUser = async (id) => {
+    try {
+      const response = await axios.delete(`/users/${id}`);
+      if (response?.data?.success) {
+        alert(response?.data?.message);
+        loaddata(); 
+      } else {
+        alert(response?.data?.message);
+      }
+    } catch (e) {
+      console.log("Error:", e.message);
+      alert("Error deleting user");
+    }
+  };
 
   return (
     <div className="App">
@@ -100,6 +117,7 @@ function App() {
 
           <div>
             <input placeholder="Your birthday"
+              type='date'
               value={birthday}
               onChange={(e) => {
                 setBirthday(e.target.value)
@@ -117,13 +135,16 @@ function App() {
         <div className=' container'> </div>
         {
           data?.map((userobj ,index)=>{
-               const {name,mobile,email,birthday}=userobj;
+               const {_id, name,mobile,email,birthday}=userobj;
                return(
                  <div className="link-contain">
                    <p>Name : {name}</p>
                    <p> Mobile number :{mobile} </p>
                    <p> Email :{email}</p>
-                   <p> Date of birth :{birthday}</p>
+                   <p> Date of birth :{new Date(birthday).toISOString().split('T')[0]}</p>
+                   <span onClick={(id)=>{
+                        deleteUser(_id)
+                   }}> <MdDelete /></span>
                  </div>
 
                )

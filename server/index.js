@@ -77,9 +77,23 @@ app.get('/users',async(req,res)=>{
 
 // delete api
 
-app.delete("/users", (req,res)=>{
+app.delete('/users/:id', async(req,res)=>{
+    try{
+        const {id}= req.params;
+        await Strapi.deleteOne({_id:id});
 
+        res.send({
+            success:true,
+            message:`${id} user is deleted`
+        })
+    }catch(e){
+        res.send({
+            success:false,
+            message:e.message
+        })
+    }
 })
+
 
 app.get("/students", (req, res) => {
   res.json("students");
